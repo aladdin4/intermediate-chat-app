@@ -1,9 +1,9 @@
-import React from 'react';
-import uuid from 'uuid';
-import { createStore } from 'redux';
+import React from "react";
+import uuid from "uuid";
+import { createStore } from "redux";
 
 function reducer(state, action) {
-  if (action.type === 'ADD_MESSAGE') {
+  if (action.type === "ADD_MESSAGE") {
     const newMessage = {
       text: action.text,
       timestamp: Date.now(),
@@ -12,11 +12,9 @@ function reducer(state, action) {
     return {
       messages: state.messages.concat(newMessage),
     };
-  } else if (action.type === 'DELETE_MESSAGE') {
+  } else if (action.type === "DELETE_MESSAGE") {
     return {
-      messages: state.messages.filter((m) => (
-        m.id !== action.id
-      ))
+      messages: state.messages.filter((m) => m.id !== action.id),
     };
   } else {
     return state;
@@ -24,22 +22,22 @@ function reducer(state, action) {
 }
 
 const initialState = {
-  activeThreadId: '1-fca2',
+  activeThreadId: "1-fca2",
   threads: [
     {
-      id: '1-fca2',
-      title: 'Buzz Aldrin',
+      id: "1-fca2",
+      title: "Buzz Aldrin",
       messages: [
         {
-          text: 'Twelve minutes to ignition.',
+          text: "Twelve minutes to ignition.",
           timestamp: Date.now(),
           id: uuid.v4(),
         },
       ],
     },
     {
-      id: '2-be91',
-      title: 'Michael Collins',
+      id: "2-be91",
+      title: "Michael Collins",
       messages: [],
     },
   ],
@@ -55,18 +53,22 @@ class App extends React.Component {
   render() {
     const state = store.getState();
     const activeThreadId = state.activeThreadId;
+
+    //the array of threads objects, which every one contain msgs (another array of objects)
     const threads = state.threads;
+
+    //saving the active thread object of threads[]
     const activeThread = threads.find((t) => t.id === activeThreadId);
 
-    const tabs = threads.map(t => (
-      { // a "tab" object
-        title: t.title,
-        active: t.id === activeThreadId,
-      }
-    ));
+    //saves each thread object's title in threads[] + the active one's title
+    const tabs = threads.map((t) => ({
+      // a "tab" object
+      title: t.title,
+      active: t.id === activeThreadId,
+    }));
 
     return (
-      <div className='ui segment'>
+      <div className="ui segment">
         <ThreadTabs tabs={tabs} />
         <Thread thread={activeThread} />
       </div>
@@ -77,54 +79,43 @@ class App extends React.Component {
 class ThreadTabs extends React.Component {
   render() {
     const tabs = this.props.tabs.map((tab, index) => (
-      <div
-        key={index}
-        className={tab.active ? 'active item' : 'item'}
-      >
+      <div key={index} className={tab.active ? "active item" : "item"}>
         {tab.title}
       </div>
     ));
-    return (
-      <div className='ui top attached tabular menu'>
-        {tabs}
-      </div>
-    );
+    return <div className="ui top attached tabular menu">{tabs}</div>;
   }
 }
 
 class MessageInput extends React.Component {
   state = {
-    value: '',
+    value: "",
   };
 
   onChange = (e) => {
     this.setState({
       value: e.target.value,
-    })
+    });
   };
 
   handleSubmit = () => {
     store.dispatch({
-      type: 'ADD_MESSAGE',
+      type: "ADD_MESSAGE",
       text: this.state.value,
     });
     this.setState({
-      value: '',
+      value: "",
     });
   };
 
   render() {
     return (
-      <div className='ui input'>
-        <input
-          onChange={this.onChange}
-          value={this.state.value}
-          type='text'
-        />
+      <div className="ui input">
+        <input onChange={this.onChange} value={this.state.value} type="text" />
         <button
           onClick={this.handleSubmit}
-          className='ui primary button'
-          type='submit'
+          className="ui primary button"
+          type="submit"
         >
           Submit
         </button>
@@ -136,7 +127,7 @@ class MessageInput extends React.Component {
 class Thread extends React.Component {
   handleClick = (id) => {
     store.dispatch({
-      type: 'DELETE_MESSAGE',
+      type: "DELETE_MESSAGE",
       id: id,
     });
   };
@@ -144,21 +135,19 @@ class Thread extends React.Component {
   render() {
     const messages = this.props.thread.messages.map((message, index) => (
       <div
-        className='comment'
+        className="comment"
         key={index}
         onClick={() => this.handleClick(message.id)}
       >
-        <div className='text'>
+        <div className="text">
           {message.text}
-          <span className='metadata'>@{message.timestamp}</span>
+          <span className="metadata">@{message.timestamp}</span>
         </div>
       </div>
     ));
     return (
-      <div className='ui center aligned basic segment'>
-        <div className='ui comments'>
-          {messages}
-        </div>
+      <div className="ui center aligned basic segment">
+        <div className="ui comments">{messages}</div>
         <MessageInput />
       </div>
     );

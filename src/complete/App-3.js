@@ -1,9 +1,9 @@
-import React from 'react';
-import uuid from 'uuid';
-import { createStore } from 'redux';
+import React from "react";
+import uuid from "uuid";
+import { createStore } from "redux";
 
 function reducer(state, action) {
-  if (action.type === 'ADD_MESSAGE') {
+  if (action.type === "ADD_MESSAGE") {
     const newMessage = {
       text: action.text,
       timestamp: Date.now(),
@@ -12,34 +12,35 @@ function reducer(state, action) {
     return {
       messages: state.messages.concat(newMessage),
     };
-  } else if (action.type === 'DELETE_MESSAGE') {
+  } else if (action.type === "DELETE_MESSAGE") {
     return {
-      messages: state.messages.filter((m) => (
-        m.id !== action.id
-      ))
+      messages: state.messages.filter((m) => m.id !== action.id),
     };
   } else {
     return state;
   }
 }
 
+//here we added the concept of threads, we start with fixed no. of threads, but soon will change that.
 const initialState = {
-  activeThreadId: '1-fca2', // New state property
-  threads: [ // Two threads in state
+  activeThreadId: "1-fca2", // New state property
+  threads: [
+    // Two threads in state
     {
-      id: '1-fca2', // hardcoded pseudo-UUID
-      title: 'Buzz Aldrin',
+      id: "1-fca2", // hardcoded pseudo-UUID
+      title: "Buzz Aldrin",
       messages: [
-        { // This thread starts with a single message already
-          text: 'Twelve minutes to ignition.',
+        {
+          // This thread starts with a single message already
+          text: "Twelve minutes to ignition.",
           timestamp: Date.now(),
           id: uuid.v4(),
         },
       ],
     },
     {
-      id: '2-be91',
-      title: 'Michael Collins',
+      id: "2-be91",
+      title: "Michael Collins",
       messages: [],
     },
   ],
@@ -59,7 +60,7 @@ class App extends React.Component {
     const activeThread = threads.find((t) => t.id === activeThreadId);
 
     return (
-      <div className='ui segment'>
+      <div className="ui segment">
         <Thread thread={activeThread} />
       </div>
     );
@@ -68,37 +69,33 @@ class App extends React.Component {
 
 class MessageInput extends React.Component {
   state = {
-    value: '',
+    value: "",
   };
 
   onChange = (e) => {
     this.setState({
       value: e.target.value,
-    })
+    });
   };
 
   handleSubmit = () => {
     store.dispatch({
-      type: 'ADD_MESSAGE',
+      type: "ADD_MESSAGE",
       text: this.state.value,
     });
     this.setState({
-      value: '',
+      value: "",
     });
   };
 
   render() {
     return (
-      <div className='ui input'>
-        <input
-          onChange={this.onChange}
-          value={this.state.value}
-          type='text'
-        />
+      <div className="ui input">
+        <input onChange={this.onChange} value={this.state.value} type="text" />
         <button
           onClick={this.handleSubmit}
-          className='ui primary button'
-          type='submit'
+          className="ui primary button"
+          type="submit"
         >
           Submit
         </button>
@@ -107,10 +104,11 @@ class MessageInput extends React.Component {
   }
 }
 
+//the new component
 class Thread extends React.Component {
   handleClick = (id) => {
     store.dispatch({
-      type: 'DELETE_MESSAGE',
+      type: "DELETE_MESSAGE",
       id: id,
     });
   };
@@ -118,21 +116,19 @@ class Thread extends React.Component {
   render() {
     const messages = this.props.thread.messages.map((message, index) => (
       <div
-        className='comment'
+        className="comment"
         key={index}
         onClick={() => this.handleClick(message.id)}
       >
-        <div className='text'>
+        <div className="text">
           {message.text}
-          <span className='metadata'>@{message.timestamp}</span>
+          <span className="metadata">@{message.timestamp}</span>
         </div>
       </div>
     ));
     return (
-      <div className='ui center aligned basic segment'>
-        <div className='ui comments'>
-          {messages}
-        </div>
+      <div className="ui center aligned basic segment">
+        <div className="ui comments">{messages}</div>
         <MessageInput />
       </div>
     );
